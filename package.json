@@ -1,0 +1,26 @@
+{
+  "name": "jt-news",
+  "version": "1.0.0",
+  "description": "JT News - More Than Popular",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bullbotbam/jt-news.git"
+  },
+  "keywords": [],
+  "author": "Donald Bull",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bullbotbam/jt-news/issues"
+  },
+  "homepage": "https://github.com/Bullbotbam/jt-news#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.6.5"
+  }
+}
