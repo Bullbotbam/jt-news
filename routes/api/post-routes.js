@@ -1,21 +1,23 @@
 const router = require('express').Router();
 const { Post, User } = require('../../models');
 
-Post.findAll({
-	attributes: ['id', 'post_url', 'title', 'created_at'],
-	order: [['created_at, DESC']],
-	include: [
-		{
-			model: User,
-			attributes: ['username'],
-		},
-	],
-});
-
 // get all users
 router.get('/', (req, res) => {
 	Post.findAll({
-		attributes: ['id', 'post_url', 'title', 'created_at'],
+		order: [['created_at', 'DESC']],
+		attributes: [
+			'id',
+			'post_url',
+			'title',
+			'created_at',
+			[
+				sequelize.literal(
+					'(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'
+				),
+				'vote_count',
+			],
+		],
+
 		include: [
 			{
 				model: User,
@@ -35,11 +37,29 @@ router.get('/:id', (req, res) => {
 		where: {
 			id: req.params.id,
 		},
-		attributes: ['id', 'post_url', 'title', 'created_at'],
+		attributes: [
+			'id',
+			'post_url',
+			'title',
+			'created_at',
+			[
+				sequelize.literal(
+					'(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'
+				),
+				'vote_count',
+			],
+		],
+		// replace the existing `include` with this
 		include: [
 			{
-				model: User,
-				attributes: ['username'],
+				model: Post,
+				attributes: ['id', 'title', 'post_url', 'created_at'],
+			},
+			{
+				model: Post,
+				attributes: ['title'],
+				through: Vote,
+				as: 'voted_posts',
 			},
 		],
 	})
@@ -64,6 +84,16 @@ router.post('/', (req, res) => {
 		user_id: req.body.user_id,
 	})
 		.then((dbPostData) => res.json(dbPostData))
+		.catch((err) => {
+			console.log(err);
+			res.status(500).json(err);
+		});
+});
+
+router.put('/upvote', (req, res) => {
+	// custom static method created in models/Post.js
+	Post.upvote(req.body, { Vote, Comment, User })
+		.then((updatedVoteData) => res.json(updatedVoteData))
 		.catch((err) => {
 			console.log(err);
 			res.status(500).json(err);
