@@ -48,7 +48,7 @@ async function signupFormHandler(event) {
 		console.log(response);
 	}
 }
-x;
+
 document
 	.querySelector('.login-form')
 	.addEventListener('submit', loginFormHandler);
